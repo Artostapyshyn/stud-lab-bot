@@ -20,16 +20,4 @@ public class KeyboardHelper {
                 .oneTimeKeyboard(false)
                 .build();
     }
-
-    public ReplyKeyboardMarkup buildMenuWithCancel() {
-        KeyboardRow keyboardRow = new KeyboardRow();
-        keyboardRow.add("❌ Скасувати");
-
-        return ReplyKeyboardMarkup.builder()
-                .keyboard(List.of(keyboardRow))
-                .selective(true)
-                .resizeKeyboard(true)
-                .oneTimeKeyboard(false)
-                .build();
-    }
 }
