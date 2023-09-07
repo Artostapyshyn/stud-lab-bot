@@ -11,8 +11,9 @@ public class KeyboardHelper {
 
     public ReplyKeyboardMarkup buildMainMenu() {
         KeyboardRow keyboardRow = new KeyboardRow();
-        keyboardRow.add("❗️Розпочати використання");
-
+        keyboardRow.add("Увійти \uD83D\uDD10");
+        keyboardRow.add("Про StudLab");
+        keyboardRow.add("Події");
         return ReplyKeyboardMarkup.builder()
                 .keyboard(List.of(keyboardRow))
                 .selective(true)

@@ -19,7 +19,6 @@ public class StartCommandHandler implements BotCommand {
 
     @Override
     public void execute(Long chatId, String[] args) {
-        log.info("Executing start command for chatId: {}", chatId);
         ReplyKeyboard replyKeyboard = keyboardHelper.buildMainMenu();
         telegramService.sendMessage(chatId,
                 "\uD83D\uDC4BПривіт! За допомогою цього чат-бота ви зможете використовувати платформу StudLab!", replyKeyboard);

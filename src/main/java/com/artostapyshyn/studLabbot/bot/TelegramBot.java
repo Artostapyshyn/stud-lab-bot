@@ -1,9 +1,9 @@
 package com.artostapyshyn.studLabbot.bot;
 
-import com.artostapyshyn.studLabbot.handler.impl.StartCommandHandler;
+import com.artostapyshyn.studLabbot.handler.BotCommand;
 import com.artostapyshyn.studLabbot.service.TelegramService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -12,35 +12,41 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import java.util.Map;
+
 @Slf4j
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 
-    @Value("${telegram.bot.token}")
-    private String botToken;
+    private final String botToken;
+    private final String botUsername;
+    private final Map<String, BotCommand> commandMap;
+    private final TelegramService telegramService;
 
-    @Value("${telegram.bot.username}")
-    private String botUsername;
-
-    @Autowired
-    private StartCommandHandler startCommandHandler;
-
-    @Autowired
-    private TelegramService telegramService;
+    public TelegramBot(@Value("${telegram.bot.token}") String botToken,
+                       @Value("${telegram.bot.username}") String botUsername,
+                       @Qualifier("commandMap") Map<String, BotCommand> commandMap,
+                       TelegramService telegramService) {
+        this.botToken = botToken;
+        this.botUsername = botUsername;
+        this.commandMap = commandMap;
+        this.telegramService = telegramService;
+    }
 
     @Override
     public void onUpdateReceived(Update update) {
-        log.info("Received update: {}", update);
-        if(update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
             Long chatId = update.getMessage().getChatId();
 
-            if (text.equals("/start")) {
-                startCommandHandler.execute(chatId, null);
+            BotCommand command = commandMap.get(text);
+            if (command != null) {
+                log.info("Executing command: {}", text);
+                command.execute(chatId, null);
             } else {
-                telegramService.sendMessage(chatId, "Не відома команда: " + text);
+                log.warn("Unknown command received: {}", text);
+                telegramService.sendMessage(chatId, "Невідома команда: " + text);
             }
-
         } else {
             log.warn("Unexpected update from user");
         }
@@ -48,7 +54,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void botConnect() throws TelegramApiException {
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-
         try {
             botsApi.registerBot(this);
             log.info("Bot successfully started!");

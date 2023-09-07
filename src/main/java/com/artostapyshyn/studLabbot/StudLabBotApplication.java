@@ -5,19 +5,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class StudLabBotApplication implements CommandLineRunner {
 
-	@Autowired
-	private TelegramBot telegramBot;
+	@Lazy
+    @Autowired
+    private TelegramBot telegramBot;
 
-	public static void main(String[] args) {
-		SpringApplication.run(StudLabBotApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(StudLabBotApplication.class, args);
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		telegramBot.botConnect();
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        telegramBot.botConnect();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }
