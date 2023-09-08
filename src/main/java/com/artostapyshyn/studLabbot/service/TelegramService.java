@@ -7,7 +7,13 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.io.ByteArrayInputStream;
+import java.util.Base64;
 
 @Slf4j
 @Component
@@ -29,6 +35,17 @@ public class TelegramService {
                 .replyMarkup(replyKeyboard)
                 .build();
         execute(sendMessage);
+    }
+
+    public void sendPhotoFromBase64(Long chatId, String base64Image) throws TelegramApiException {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64Image);
+        InputFile photo = new InputFile(new ByteArrayInputStream(decodedBytes), "image.png");
+
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setChatId(String.valueOf(chatId));
+        sendPhoto.setPhoto(photo);
+
+        botSender.execute(sendPhoto);
     }
 
     private void execute(BotApiMethod botApiMethod) {

@@ -23,6 +23,8 @@ public class BotCommandConfiguration {
 
     private final CourseCommandHandler courseCommandHandler;
 
+    private final ProfileCommandHandler profileCommandHandler;
+
     @Bean
     public Map<String, BotCommand> commandMap() {
         Map<String, BotCommand> commands = new HashMap<>();
@@ -31,6 +33,7 @@ public class BotCommandConfiguration {
         commands.put("Увійти \uD83D\uDD10", loginCommandHandler);
         commands.put("Події", eventCommandHandler);
         commands.put("Курси", courseCommandHandler);
+        commands.put("Профіль \uD83D\uDC64", profileCommandHandler);
         return commands;
     }
 }

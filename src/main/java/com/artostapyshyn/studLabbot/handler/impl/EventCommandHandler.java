@@ -42,9 +42,10 @@ public class EventCommandHandler implements BotCommand {
                     sendEventMessage(chatId, event, replyKeyboard);
                 }
             } else {
+                telegramService.sendMessage(chatId, "Виникла помилка, спробуйте ще раз.");
             }
 
-        } catch (RestClientException | JsonProcessingException e) {
+        } catch (RestClientException |  JsonProcessingException e ) {
             e.printStackTrace();
         }
     }
@@ -65,5 +66,4 @@ public class EventCommandHandler implements BotCommand {
         message.append(description).append("\n\n");
         return message.toString();
     }
-
 }

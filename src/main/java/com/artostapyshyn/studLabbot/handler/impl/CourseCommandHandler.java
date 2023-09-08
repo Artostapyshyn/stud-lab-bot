@@ -41,6 +41,7 @@ public class CourseCommandHandler implements BotCommand {
                     sendCourseMessage(chatId, event, replyKeyboard);
                 }
             } else {
+                telegramService.sendMessage(chatId, "Виникла помилка, спробуйте ще раз.");
             }
 
         } catch (RestClientException | JsonProcessingException e) {

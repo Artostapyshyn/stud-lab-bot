@@ -1,5 +1,6 @@
 package com.artostapyshyn.studLabbot.bot;
 
+import com.artostapyshyn.studLabbot.enums.UserState;
 import com.artostapyshyn.studLabbot.handler.BotCommand;
 import com.artostapyshyn.studLabbot.service.TelegramService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +22,17 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final String botToken;
     private final String botUsername;
     private final Map<String, BotCommand> commandMap;
+    private final Map<Long, UserState> userStates;
     private final TelegramService telegramService;
 
     public TelegramBot(@Value("${telegram.bot.token}") String botToken,
                        @Value("${telegram.bot.username}") String botUsername,
                        @Qualifier("commandMap") Map<String, BotCommand> commandMap,
-                       TelegramService telegramService) {
+                       Map<Long, UserState> userStates, TelegramService telegramService) {
         this.botToken = botToken;
         this.botUsername = botUsername;
         this.commandMap = commandMap;
+        this.userStates = userStates;
         this.telegramService = telegramService;
     }
 
@@ -39,13 +42,20 @@ public class TelegramBot extends TelegramLongPollingBot {
             String text = update.getMessage().getText();
             Long chatId = update.getMessage().getChatId();
 
-            BotCommand command = commandMap.get(text);
-            if (command != null) {
-                log.info("Executing command: {}", text);
-                command.execute(chatId, null);
+            UserState state = userStates.getOrDefault(chatId, UserState.IDLE);
+
+            if(state == UserState.IDLE) {
+                BotCommand command = commandMap.get(text);
+                if (command != null) {
+                    log.info("Executing command: {}", text);
+                    command.execute(chatId, null);
+                } else {
+                    log.warn("Unknown command received: {}", text);
+                    telegramService.sendMessage(chatId, "Невідома команда: " + text);
+                }
             } else {
-                log.warn("Unknown command received: {}", text);
-                telegramService.sendMessage(chatId, "Невідома команда: " + text);
+                BotCommand command = commandMap.get("Увійти \uD83D\uDD10");
+                command.execute(chatId, new String[]{text});
             }
         } else {
             log.warn("Unexpected update from user");
