@@ -1,10 +1,7 @@
 package com.artostapyshyn.studLabbot.config;
 
 import com.artostapyshyn.studLabbot.handler.BotCommand;
-import com.artostapyshyn.studLabbot.handler.impl.EventCommandHandler;
-import com.artostapyshyn.studLabbot.handler.impl.InfoCommandHandler;
-import com.artostapyshyn.studLabbot.handler.impl.LoginCommandHandler;
-import com.artostapyshyn.studLabbot.handler.impl.StartCommandHandler;
+import com.artostapyshyn.studLabbot.handler.impl.*;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +21,8 @@ public class BotCommandConfiguration {
 
     private final EventCommandHandler eventCommandHandler;
 
+    private final CourseCommandHandler courseCommandHandler;
+
     @Bean
     public Map<String, BotCommand> commandMap() {
         Map<String, BotCommand> commands = new HashMap<>();
@@ -31,6 +30,7 @@ public class BotCommandConfiguration {
         commands.put("Про StudLab", infoCommandHandler);
         commands.put("Увійти \uD83D\uDD10", loginCommandHandler);
         commands.put("Події", eventCommandHandler);
+        commands.put("Курси", courseCommandHandler);
         return commands;
     }
 }

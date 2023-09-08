@@ -18,7 +18,7 @@ import static com.artostapyshyn.studLabbot.constants.ApiConstants.API_BASE_URL;
 
 @Component
 @AllArgsConstructor
-public class EventCommandHandler implements BotCommand {
+public class CourseCommandHandler implements BotCommand {
 
     private final RestTemplate restTemplate;
 
@@ -31,15 +31,14 @@ public class EventCommandHandler implements BotCommand {
     @Override
     public void execute(Long chatId, String[] args) {
         ReplyKeyboard replyKeyboard = keyboardHelper.buildMainMenu();
-        String url = API_BASE_URL + "events/all";
+        String url = API_BASE_URL + "course/all";
 
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
             if (response.getStatusCode() == HttpStatus.OK) {
                 JsonNode eventsArray = objectMapper.readTree(response.getBody());
                 for (JsonNode event : eventsArray) {
-                    sendEventMessage(chatId, event, replyKeyboard);
+                    sendCourseMessage(chatId, event, replyKeyboard);
                 }
             } else {
             }
@@ -49,19 +48,17 @@ public class EventCommandHandler implements BotCommand {
         }
     }
 
-    public void sendEventMessage(Long chatId, JsonNode event, ReplyKeyboard replyKeyboard) {
-        String formattedEventMessage = formatEventMessage(event);
-        telegramService.sendMessage(chatId, formattedEventMessage, replyKeyboard);
+    public void sendCourseMessage(Long chatId, JsonNode event, ReplyKeyboard replyKeyboard) {
+        String formattedCourseMessage = formatCourseMessage(event);
+        telegramService.sendMessage(chatId, formattedCourseMessage, replyKeyboard);
     }
 
-    public String formatEventMessage(JsonNode event) {
+    public String formatCourseMessage(JsonNode event) {
         StringBuilder message = new StringBuilder();
 
-        message.append("📅 <b>").append(event.get("nameOfEvent").asText()).append("</b>\n\n");
-        message.append("🕒 <b>Дата початку:</b> ").append(event.get("date").asText()).append("\n");
-        message.append("🕒 <b>Дата завершення:</b> ").append(event.get("endDate").asText()).append("\n\n");
-        message.append("📍 <b>Місце:</b> ").append(event.get("venue").asText()).append("\n\n");
-        String description = event.get("description").asText();
+        message.append("📅 <b>").append(event.get("courseName").asText()).append("</b>\n\n");
+        String description = event.get("courseDescription").asText();
+        message.append("\uD83D\uDD17 Посилання:</b> ").append(event.get("courseLink").asText()).append("\n\n");
         message.append(description).append("\n\n");
         return message.toString();
     }

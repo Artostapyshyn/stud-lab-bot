@@ -14,6 +14,7 @@ public class KeyboardHelper {
         keyboardRow.add("Увійти \uD83D\uDD10");
         keyboardRow.add("Про StudLab");
         keyboardRow.add("Події");
+        keyboardRow.add("Курси");
         return ReplyKeyboardMarkup.builder()
                 .keyboard(List.of(keyboardRow))
                 .selective(true)
