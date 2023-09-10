@@ -3,28 +3,35 @@ package com.artostapyshyn.studLabbot.handler.impl;
 import com.artostapyshyn.studLabbot.enums.UserState;
 import com.artostapyshyn.studLabbot.handler.BotCommand;
 import com.artostapyshyn.studLabbot.helper.KeyboardHelper;
+import com.artostapyshyn.studLabbot.model.UserToken;
 import com.artostapyshyn.studLabbot.service.TelegramService;
+import com.artostapyshyn.studLabbot.service.UserTokenService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.artostapyshyn.studLabbot.constants.ApiConstants.API_BASE_URL;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class LoginCommandHandler implements BotCommand {
 
     private final TelegramService telegramService;
+    private final UserTokenService userTokenService;
     private final KeyboardHelper keyboardHelper;
     private final RestTemplate restTemplate;
 
     private final Map<Long, UserState> userStates;
     private final Map<Long, String> tempEmails = new HashMap<>();
     private final Map<Long, String> tempPasswords = new HashMap<>();
+    private final Map<Long, String> userEmails;
 
     @Override
     public void execute(Long chatId, String[] args) {
@@ -63,7 +70,9 @@ public class LoginCommandHandler implements BotCommand {
 
                     if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null && response.getBody().containsKey("token")) {
                         String token = (String) response.getBody().get("token");
+                        saveToken(token, email);
                         telegramService.sendMessage(chatId, "Успішний вхід!");
+                        userEmails.put(chatId, email);
                         keyboardHelper.buildLoggedInMenu();
 
                     } else {
@@ -78,5 +87,16 @@ public class LoginCommandHandler implements BotCommand {
             tempEmails.remove(chatId);
             tempPasswords.remove(chatId);
         }
+    }
+
+    private void saveToken(String token, String email) {
+        Optional<UserToken> existingUserTokenOpt = userTokenService.findByEmail(email);
+
+        existingUserTokenOpt.ifPresent(userTokenService::delete);
+
+        UserToken userToken = new UserToken();
+        userToken.setToken(token);
+        userToken.setEmail(email);
+        userTokenService.save(userToken);
     }
 }

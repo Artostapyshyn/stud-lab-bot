@@ -38,4 +38,9 @@ public class StudLabBotApplication implements CommandLineRunner {
     public Map<Long, UserState> userStates() {
         return new HashMap<>();
     }
+
+    @Bean
+    public Map<Long, String> userEmails() {
+        return new HashMap<>();
+    }
 }
