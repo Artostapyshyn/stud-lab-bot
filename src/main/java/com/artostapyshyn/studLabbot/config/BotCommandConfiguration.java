@@ -27,6 +27,8 @@ public class BotCommandConfiguration {
 
     private final RulesCommandHandler rulesCommandHandler;
 
+    private final LogoutCommandHandler logoutCommandHandler;
+
     @Bean
     public Map<String, BotCommand> commandMap() {
         Map<String, BotCommand> commands = new HashMap<>();
@@ -37,7 +39,7 @@ public class BotCommandConfiguration {
         commands.put("Події", eventCommandHandler);
         commands.put("Курси", courseCommandHandler);
         commands.put("Профіль \uD83D\uDC64", profileCommandHandler);
-        commands.put("Вийти \uD83D\uDEAA", profileCommandHandler);
+        commands.put("Вийти \uD83D\uDEAA", logoutCommandHandler);
         return commands;
     }
 }
