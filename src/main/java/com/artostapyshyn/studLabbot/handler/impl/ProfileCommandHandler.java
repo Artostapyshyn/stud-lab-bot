@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Map;
 
@@ -63,17 +64,20 @@ public class ProfileCommandHandler implements BotCommand {
 
         } catch (RestClientException e) {
             e.printStackTrace();
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void sendProfileInfo(Long chatId, JsonObject profile, ReplyKeyboard replyKeyboard) {
+    public void sendProfileInfo(Long chatId, JsonObject profile, ReplyKeyboard replyKeyboard) throws TelegramApiException {
         String formattedProfileInfo = formatProfileInfo(profile);
         telegramService.sendMessage(chatId, formattedProfileInfo, replyKeyboard);
     }
 
-    public String formatProfileInfo(JsonObject profile) {
 
-        return "👤 <b>" + profile.get("firstName").getAsString() + " " +
+    public String formatProfileInfo(JsonObject profile) {
+        return
+                "👤 <b>" + profile.get("firstName").getAsString() + " " +
                 profile.get("lastName").getAsString() + "</b>" + "\n" +
                 "🎓 <b>Спеціальність:</b> " + profile.get("major").getAsString() + "\n" +
                 "📘 <b>Курс:</b> " + profile.get("course").getAsString() + "\n" +

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -71,9 +72,9 @@ public class LoginCommandHandler implements BotCommand {
                     if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null && response.getBody().containsKey("token")) {
                         String token = (String) response.getBody().get("token");
                         saveToken(token, email);
-                        telegramService.sendMessage(chatId, "Успішний вхід!");
+                        ReplyKeyboardMarkup loggedInMenu = keyboardHelper.buildLoggedInMenu();
+                        telegramService.sendMessage(chatId, "Успішний вхід!", loggedInMenu);
                         userEmails.put(chatId, email);
-                        keyboardHelper.buildLoggedInMenu();
 
                     } else {
                         telegramService.sendMessage(chatId, "Помилка при вході. Будь ласка, спробуйте знову.");
