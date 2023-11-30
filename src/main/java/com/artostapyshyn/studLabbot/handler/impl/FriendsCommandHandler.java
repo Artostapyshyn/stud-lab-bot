@@ -49,12 +49,8 @@ public class FriendsCommandHandler implements BotCommand {
                     InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
                     List<InlineKeyboardButton> buttons = new ArrayList<>();
 
-                    InlineKeyboardButton viewProfileButton = new InlineKeyboardButton("View Profile");
-                    viewProfileButton.setCallbackData("профіль користувача" + friend.get("friendId").asText());
-                    buttons.add(viewProfileButton);
-
-                    InlineKeyboardButton deleteFriendButton = new InlineKeyboardButton("Delete Friend");
-                    deleteFriendButton.setCallbackData("Видалити друга:" + friend.get("friendId").asText());
+                    InlineKeyboardButton deleteFriendButton = new InlineKeyboardButton("Видалити друга ❌");
+                    deleteFriendButton.setCallbackData("Видалити друга" + friend.get("friendId").asLong());
                     buttons.add(deleteFriendButton);
 
                     inlineKeyboardMarkup.setKeyboard(List.of(buttons));
