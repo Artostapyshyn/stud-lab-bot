@@ -27,18 +27,14 @@ import static com.artostapyshyn.studLabbot.constants.ApiConstants.API_BASE_URL;
 public class ProfileCommandHandler implements BotCommand {
 
     private final RestTemplate restTemplate;
-
     private final TelegramService telegramService;
-
     private final KeyboardHelper keyboardHelper;
-
     private final Map<Long, String> userEmails;
-
     private final UserTokenService userTokenService;
 
     @Override
     public void execute(Long chatId, String[] args) {
-        ReplyKeyboard replyKeyboard = keyboardHelper.buildLoggedInMenu();
+        ReplyKeyboard replyKeyboard = keyboardHelper.buildProfileMenu();
         String url = API_BASE_URL + "student/personal-info";
 
         String userEmail = userEmails.get(chatId);
@@ -57,15 +53,18 @@ public class ProfileCommandHandler implements BotCommand {
                 Gson gson = new Gson();
                 JsonArray profilesArray = gson.fromJson(response.getBody(), JsonArray.class);
                 JsonObject profile = profilesArray.get(0).getAsJsonObject();
+
+                UserToken userToken = userTokenService.findByChatId(chatId);
+                userToken.setStudentId(profile.get("id").getAsLong());
+                userTokenService.save(userToken);
+
                 sendProfileInfo(chatId, profile, replyKeyboard);
             } else {
                 telegramService.sendMessage(chatId, "Виникла помилка, спробуйте ще раз.");
             }
 
-        } catch (RestClientException e) {
+        } catch (RestClientException | TelegramApiException e) {
             e.printStackTrace();
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -74,14 +73,14 @@ public class ProfileCommandHandler implements BotCommand {
         telegramService.sendMessage(chatId, formattedProfileInfo, replyKeyboard);
     }
 
-
-    public String formatProfileInfo(JsonObject profile) {
+    public static String formatProfileInfo(JsonObject profile) {
         return
-                "👤 <b>" + profile.get("firstName").getAsString() + " " +
-                profile.get("lastName").getAsString() + "</b>" + "\n" +
-                "🎓 <b>Спеціальність:</b> " + profile.get("major").getAsString() + "\n" +
-                "📘 <b>Курс:</b> " + profile.get("course").getAsString() + "\n" +
-                "🌍 <b>Місто:</b> " + profile.get("city").getAsString() + "\n\n" +
-                "\uD83C\uDFEB <b>Університет:</b> " + profile.getAsJsonObject("university").get("name").getAsString() + "\n\n";
+                "Cтатус: <b>" + profile.get("authStatus").getAsString() + "</b>\n\n" +
+                        "👤 <b>" + profile.get("firstName").getAsString() + " " +
+                        profile.get("lastName").getAsString() + "</b>" + "\n" +
+                        "🎓 <b>Спеціальність:</b> " + profile.get("major").getAsString() + "\n" +
+                        "📘 <b>Курс:</b> " + profile.get("course").getAsString() + "\n" +
+                        "🌍 <b>Місто:</b> " + profile.get("city").getAsString() + "\n\n" +
+                        "\uD83C\uDFEB <b>Університет:</b> " + profile.getAsJsonObject("university").get("name").getAsString() + "\n\n";
     }
 }

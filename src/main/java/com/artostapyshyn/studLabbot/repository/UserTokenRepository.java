@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface UserTokenRepository extends JpaRepository<UserToken, String> {
     Optional<UserToken> findByEmail(String email);
+
+    UserToken findByChatId(Long chatId);
 }

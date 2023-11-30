@@ -21,11 +21,8 @@ import static com.artostapyshyn.studLabbot.constants.ApiConstants.API_BASE_URL;
 public class CourseCommandHandler implements BotCommand {
 
     private final RestTemplate restTemplate;
-
     private final TelegramService telegramService;
-
     private final KeyboardHelper keyboardHelper;
-
     private final ObjectMapper objectMapper;
 
     @Override
@@ -36,32 +33,38 @@ public class CourseCommandHandler implements BotCommand {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                JsonNode eventsArray = objectMapper.readTree(response.getBody());
-                for (JsonNode event : eventsArray) {
-                    sendCourseMessage(chatId, event, replyKeyboard);
+                JsonNode coursesArray = objectMapper.readTree(response.getBody());
+                for (JsonNode course : coursesArray) {
+                    sendCourseMessage(chatId, course, replyKeyboard);
                 }
             } else {
                 telegramService.sendMessage(chatId, "Виникла помилка, спробуйте ще раз.");
             }
-
         } catch (RestClientException | JsonProcessingException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendCourseMessage(Long chatId, JsonNode event, ReplyKeyboard replyKeyboard) {
-        String formattedCourseMessage = formatCourseMessage(event);
+    public void sendCourseMessage(Long chatId, JsonNode course, ReplyKeyboard replyKeyboard) {
+        String formattedCourseMessage = formatCourseMessage(course);
         telegramService.sendMessage(chatId, formattedCourseMessage, replyKeyboard);
     }
 
-    public String formatCourseMessage(JsonNode event) {
+    public String formatCourseMessage(JsonNode course) {
         StringBuilder message = new StringBuilder();
 
-        message.append("📅 <b>").append(event.get("courseName").asText()).append("</b>\n\n");
-        String description = event.get("courseDescription").asText();
-        message.append("\uD83D\uDD17 Посилання:</b> ").append(event.get("courseLink").asText()).append("\n\n");
-        message.append(description).append("\n\n");
+        String courseName = course.get("courseName").asText()
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
+
+        String courseLink = course.get("courseLink").asText()
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
+
+        message.append("📅 <b>").append(courseName).append("</b>\n\n");
+        message.append("\uD83D\uDD17 <b>Посилання:</b> ").append(courseLink).append("\n\n");
+        message.append(course.get("courseDescription").asText()).append("\n\n");
+
         return message.toString();
     }
-
 }

@@ -13,7 +13,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.ByteArrayInputStream;
-import java.util.Base64;
 
 @Slf4j
 @Component
@@ -37,22 +36,37 @@ public class TelegramService {
         execute(sendMessage);
     }
 
-    public void sendPhotoFromBase64(Long chatId, String base64Image) throws TelegramApiException {
-        byte[] decodedBytes = Base64.getDecoder().decode(base64Image);
-        InputFile photo = new InputFile(new ByteArrayInputStream(decodedBytes), "image.png");
-
-        SendPhoto sendPhoto = new SendPhoto();
-        sendPhoto.setChatId(String.valueOf(chatId));
-        sendPhoto.setPhoto(photo);
-
-        botSender.execute(sendPhoto);
-    }
-
-    private void execute(BotApiMethod botApiMethod) {
+    private void execute(BotApiMethod<?> botApiMethod) {
         try {
             botSender.execute(botApiMethod);
         } catch (Exception e) {
             log.error("Exception: ", e);
         }
     }
+
+    public void sendPhoto(Long chatId, byte[] photoBytes, String caption, ReplyKeyboard replyKeyboard) throws TelegramApiException {
+        InputFile photo = new InputFile(new ByteArrayInputStream(photoBytes), "profile_photo.jpg");
+
+        SendPhoto sendPhoto = SendPhoto.builder()
+                .chatId(chatId.toString())
+                .photo(photo)
+                .caption(caption)
+                .parseMode(ParseMode.HTML)
+                .replyMarkup(replyKeyboard)
+                .build();
+        log.warn("Photo: " + photo);
+        botSender.execute(sendPhoto);
+    }
+
+    public void sendMessageWithInlineKeyboard(Long chatId, String text, ReplyKeyboard replyKeyboard) {
+        SendMessage sendMessage = SendMessage
+                .builder()
+                .text(text)
+                .chatId(chatId.toString())
+                .parseMode(ParseMode.HTML)
+                .replyMarkup(replyKeyboard)
+                .build();
+        execute(sendMessage);
+    }
+
 }

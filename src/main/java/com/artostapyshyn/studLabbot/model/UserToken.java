@@ -20,6 +20,12 @@ public class UserToken {
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "chat_id", nullable = false)
+    private Long chatId;
+
+    @Column(name = "student_id")
+    private Long studentId;
+
     @Column(name = "token", nullable = false)
     private String token;
 

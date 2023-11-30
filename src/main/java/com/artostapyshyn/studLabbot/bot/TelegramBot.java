@@ -4,14 +4,12 @@ import com.artostapyshyn.studLabbot.enums.UserState;
 import com.artostapyshyn.studLabbot.handler.BotCommand;
 import com.artostapyshyn.studLabbot.service.TelegramService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.util.Map;
 
@@ -19,21 +17,18 @@ import java.util.Map;
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 
-    private final String botToken;
-    private final String botUsername;
-    private final Map<String, BotCommand> commandMap;
-    private final Map<Long, UserState> userStates;
-    private final TelegramService telegramService;
+    @Qualifier("commandMap")
+    @Autowired
+    private Map<String, BotCommand> commandMap;
+    @Autowired
+    private Map<Long, UserState> userStates;
+    @Autowired
+    private TelegramService telegramService;
+    private final String botUserName;
 
-    public TelegramBot(@Value("${telegram.bot.token}") String botToken,
-                       @Value("${telegram.bot.username}") String botUsername,
-                       @Qualifier("commandMap") Map<String, BotCommand> commandMap,
-                       Map<Long, UserState> userStates, TelegramService telegramService) {
-        this.botToken = botToken;
-        this.botUsername = botUsername;
-        this.commandMap = commandMap;
-        this.userStates = userStates;
-        this.telegramService = telegramService;
+    public TelegramBot(@Value("${telegram.bot.token}") String botToken, @Value("${telegram.bot.username}") String botUserName) {
+        super(botToken);
+        this.botUserName = botUserName;
     }
 
     @Override
@@ -44,7 +39,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             UserState state = userStates.getOrDefault(chatId, UserState.IDLE);
 
-            if(state == UserState.IDLE) {
+            if (state == UserState.IDLE) {
                 BotCommand command = commandMap.get(text);
                 if (command != null) {
                     log.info("Executing command: {}", text);
@@ -62,23 +57,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public void botConnect() throws TelegramApiException {
-        TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        try {
-            botsApi.registerBot(this);
-            log.info("Bot successfully started!");
-        } catch (TelegramApiException e) {
-            log.error("Error when starting bot. Details: {}", e.getMessage());
-        }
-    }
-
     @Override
     public String getBotUsername() {
-        return botUsername;
+        return botUserName;
     }
 
-    @Override
-    public String getBotToken() {
-        return botToken;
-    }
 }

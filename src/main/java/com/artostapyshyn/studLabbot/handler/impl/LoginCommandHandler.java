@@ -71,7 +71,8 @@ public class LoginCommandHandler implements BotCommand {
 
                     if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null && response.getBody().containsKey("token")) {
                         String token = (String) response.getBody().get("token");
-                        saveToken(token, email);
+                        saveToken(token, email, chatId);
+                        log.warn(chatId + " logged in");
                         ReplyKeyboardMarkup loggedInMenu = keyboardHelper.buildLoggedInMenu();
                         telegramService.sendMessage(chatId, "Успішний вхід!", loggedInMenu);
                         userEmails.put(chatId, email);
@@ -90,13 +91,14 @@ public class LoginCommandHandler implements BotCommand {
         }
     }
 
-    private void saveToken(String token, String email) {
+    private void saveToken(String token, String email, Long chatId) {
         Optional<UserToken> existingUserTokenOpt = userTokenService.findByEmail(email);
 
         existingUserTokenOpt.ifPresent(userTokenService::delete);
 
         UserToken userToken = new UserToken();
         userToken.setToken(token);
+        userToken.setChatId(chatId);
         userToken.setEmail(email);
         userTokenService.save(userToken);
     }

@@ -13,15 +13,19 @@ public class UserTokenService {
 
     private final UserTokenRepository userTokenRepository;
 
-    public UserToken save(UserToken userToken){
+    public UserToken save(UserToken userToken) {
         return userTokenRepository.save(userToken);
     }
 
-    public Optional<UserToken> findByEmail(String email){
+    public Optional<UserToken> findByEmail(String email) {
         return userTokenRepository.findByEmail(email);
     }
 
-    public void delete(UserToken userToken){
+    public void delete(UserToken userToken) {
         userTokenRepository.delete(userToken);
+    }
+
+    public UserToken findByChatId(Long chatId) {
+        return userTokenRepository.findByChatId(chatId);
     }
 }

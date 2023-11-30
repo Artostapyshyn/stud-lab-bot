@@ -38,4 +38,30 @@ public class KeyboardHelper {
                 .oneTimeKeyboard(false)
                 .build();
     }
+
+    public ReplyKeyboardMarkup buildProfileMenu() {
+        KeyboardRow row1 = new KeyboardRow();
+        row1.add("Профіль \uD83D\uDC64");
+        row1.add("Друзі \uD83D\uDC65");
+        row1.add("Редагувати профіль ✏\uFE0F");
+
+        KeyboardRow row2 = new KeyboardRow();
+        row2.add("Сповіщення \uD83D\uDD14");
+        row2.add("Про StudLab");
+
+        KeyboardRow row3 = new KeyboardRow();
+        row3.add("Події");
+        row3.add("Курси");
+
+        KeyboardRow row4 = new KeyboardRow();
+        row4.add("Вийти \uD83D\uDEAA");
+
+        return ReplyKeyboardMarkup.builder()
+                .keyboard(List.of(row1, row2, row3, row4))
+                .selective(true)
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(false)
+                .build();
+    }
+
 }
