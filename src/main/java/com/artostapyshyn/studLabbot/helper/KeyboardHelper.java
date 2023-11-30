@@ -12,10 +12,10 @@ public class KeyboardHelper {
     public ReplyKeyboardMarkup buildMainMenu() {
         KeyboardRow keyboardRow = new KeyboardRow();
         keyboardRow.add("Увійти \uD83D\uDD10");
-        keyboardRow.add("Про StudLab");
         keyboardRow.add("Події");
         keyboardRow.add("Курси");
-        keyboardRow.add("Правила сервісу");
+        keyboardRow.add("Правила сервісу \uD83D\uDCC4");
+        keyboardRow.add("Про StudLab");
         return ReplyKeyboardMarkup.builder()
                 .keyboard(List.of(keyboardRow))
                 .selective(true)

@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -29,4 +31,6 @@ public class UserToken {
     @Column(name = "token", nullable = false)
     private String token;
 
+    @Column(name = "last_notification_time")
+    private LocalDateTime lastNotificationTime;
 }

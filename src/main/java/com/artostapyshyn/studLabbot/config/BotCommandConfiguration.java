@@ -22,6 +22,7 @@ public class BotCommandConfiguration {
     private final RulesCommandHandler rulesCommandHandler;
     private final LogoutCommandHandler logoutCommandHandler;
     private final FriendsCommandHandler friendsCommandHandler;
+    private final MessageCommandHandler messageCommandHandler;
 
     @Bean
     public Map<String, BotCommand> commandMap() {
@@ -34,6 +35,7 @@ public class BotCommandConfiguration {
         commands.put("Курси", courseCommandHandler);
         commands.put("Профіль \uD83D\uDC64", profileCommandHandler);
         commands.put("Друзі \uD83D\uDC65", friendsCommandHandler);
+        commands.put("Сповіщення \uD83D\uDD14", messageCommandHandler);
         commands.put("Вийти \uD83D\uDEAA", logoutCommandHandler);
         return commands;
     }

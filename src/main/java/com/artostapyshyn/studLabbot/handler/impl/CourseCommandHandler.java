@@ -53,13 +53,8 @@ public class CourseCommandHandler implements BotCommand {
     public String formatCourseMessage(JsonNode course) {
         StringBuilder message = new StringBuilder();
 
-        String courseName = course.get("courseName").asText()
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
-
-        String courseLink = course.get("courseLink").asText()
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
+        String courseName = course.get("courseName").asText();
+        String courseLink = course.get("courseLink").asText();
 
         message.append("📅 <b>").append(courseName).append("</b>\n\n");
         message.append("\uD83D\uDD17 <b>Посилання:</b> ").append(courseLink).append("\n\n");

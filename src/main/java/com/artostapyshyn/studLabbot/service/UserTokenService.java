@@ -5,6 +5,7 @@ import com.artostapyshyn.studLabbot.repository.UserTokenRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -12,6 +13,10 @@ import java.util.Optional;
 public class UserTokenService {
 
     private final UserTokenRepository userTokenRepository;
+
+    public List<UserToken> findAll() {
+        return userTokenRepository.findAll();
+    }
 
     public UserToken save(UserToken userToken) {
         return userTokenRepository.save(userToken);

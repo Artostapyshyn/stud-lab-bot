@@ -57,6 +57,12 @@ public class TelegramBot extends TelegramLongPollingBot {
                 log.error("Failed to parse friendId from callbackData: {}", callbackData);
             }
 
+            if (callbackData.startsWith("Видалити повідомлення")) {
+                Long messageId = Long.parseLong(callbackData.replace("Видалити повідомлення", "").trim());
+                deleteMessage(messageId, callbackQuery.getMessage().getChatId());
+                sendConfirmationMessage(callbackQuery.getMessage().getChatId(), "Повідомлення видалено.");
+            }
+
             if (friendId != null) {
                 boolean deleted = deleteFriend(friendId, callbackQuery.getMessage().getChatId());
 
@@ -103,6 +109,22 @@ public class TelegramBot extends TelegramLongPollingBot {
             return response.getStatusCode() == HttpStatus.OK;
         } catch (RestClientException e) {
             return false;
+        }
+    }
+
+    private void deleteMessage(Long messageId, Long chatId) {
+        UserToken userToken = userTokenService.findByChatId(chatId);
+        String url = API_BASE_URL + "messages/delete-by-id?messageId=" + messageId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userToken.getToken());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+            response.getStatusCode();
+        } catch (RestClientException e) {
+            log.error("Error while deleting message", e);
         }
     }
 
