@@ -23,6 +23,7 @@ public class BotCommandConfiguration {
     private final LogoutCommandHandler logoutCommandHandler;
     private final FriendsCommandHandler friendsCommandHandler;
     private final MessageCommandHandler messageCommandHandler;
+    private final EditProfileCommandHandler editProfileCommandHandler;
 
     @Bean
     public Map<String, BotCommand> commandMap() {
