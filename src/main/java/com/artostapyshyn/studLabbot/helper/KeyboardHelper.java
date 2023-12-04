@@ -43,7 +43,6 @@ public class KeyboardHelper {
         KeyboardRow row1 = new KeyboardRow();
         row1.add("Профіль \uD83D\uDC64");
         row1.add("Друзі \uD83D\uDC65");
-        row1.add("Редагувати профіль ✏\uFE0F");
 
         KeyboardRow row2 = new KeyboardRow();
         row2.add("Сповіщення \uD83D\uDD14");
